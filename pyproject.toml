@@ -6,20 +6,24 @@ build-backend = "setuptools.build_meta"
 name = "flask-rbac-icdc"
 version = "0.1.0"
 description = "Flask RBAC library using YAML config file"
-authors = [
-    { name = "ICDC", email = "support@icdc.io" }
-]
+authors = [{ name = "ICDC", email = "support@icdc.io" }]
 readme = "README.md"
-dependencies = [
-    "Flask",
-    "PyYAML"
+license = "MIT"
+license-files = ["LICEN[CS]E.*"]
+dependencies = ["Flask", "PyYAML"]
+keywords = ["flask", "rbac", "yaml", "icdc"]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Framework :: Flask",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
-classifiers=[
-    "Programming Language :: Python :: 3",
-    "Framework :: Flask",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+
 [project.urls]
 Homepage = "https://github.com/icdc-io/flask-rbac"
 Repository = "https://github.com/icdc-io/flask-rbac.git"
