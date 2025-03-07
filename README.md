@@ -40,38 +40,38 @@ roles:
 ### Define Account Class
 Implement the `RbacAccount` abstract class:
 ```py
+from flask_sqlalchemy import SQLAlchemy
 from flask_rbac_icdc import RbacAccount
 
-class Account(RbacAccount):
-    def __init__(self, account_id, name):
-        self._id = account_id
-        self._name = name
+db = SQLAlchemy()
 
-    @property
-    def id(self):
-        return self._id
+class Account(db.Model, RbacAccount):
+    __tablename__ = "accounts"
+    object_name = "accounts"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(64), unique=True, nullable=False)
+    # ...Other account properties here
 
-    @property
-    def name(self):
-        return self._name
+    @classmethod
+    def get_by_name(cls, account_name: str) -> Optional["Account"]:
+        return cls.query.filter_by(name=account_name).first()
 
-    def subject_role(self, x_auth_role, roles):
-        return roles[x_auth_role.upper()]
+    def subject_role(self, x_auth_role: str) -> str:
+        operator = is_operator(self.name, x_auth_role)
+        if x_auth_role == "operator" and not operator:
+            raise PermissionException("You are not operator")
+        if operator:
+            return "operator"
+        return x_auth_role
 ```
 
 ### Initialize RBAC
 Initialize the RBAC instance in your Flask application:
 ```py
-from flask import Flask
 from flask_rbac_icdc import RBAC
+from app.models.accounts import Account
 
-app = Flask(__name__)
-
-def get_account(account_name):
-    # Replace with your logic to get the account by name
-    return Account(1, account_name)
-
-rbac = RBAC(config_path='rbac_config.yaml', get_account=get_account)
+rbac = RBAC(config_path='rbac_config.yaml', Accounts)
 ```
 
 ### Protect Endpoints
@@ -91,4 +91,4 @@ def list_products():
 ```
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/icdc-io/flask-rbac/blob/main/LICENSE) file for details.

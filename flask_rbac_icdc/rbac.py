@@ -1,5 +1,25 @@
 """
-This module provides authorization utilities
+This module provides role-based access control (RBAC) functionality for Flask applications.
+There are two modes of operation for this module:
+1.  Basic RBAC: In this mode, the RBAC module validates the role of the subject based on
+    the role name provided in the authentication headers. The role name is validated against
+    the roles defined in the RBAC policy configuration.
+
+Example:
+.. code-block:: python
+    rbac = RBAC(rbac_config_path, Account, use_operator_group=False)
+
+2.  Operator Group RBAC: In this mode, the RBAC module validates the role of the subject based
+    on the role name and account name provided in the authentication headers. The role name is
+    validated against the roles defined in the RBAC policy configuration, and the account name
+    is used to determine if the subject is an operator for that account.
+
+Example:
+.. code-block:: python
+    # Default use_operator_group=True
+    rbac = RBAC(rbac_config_path, Account)
+    # or explicitly set use_operator_group=True
+    rbac = RBAC(rbac_config_path, Account, use_operator_group=True)
 """
 
 from abc import abstractmethod
@@ -11,7 +31,6 @@ from typing import Dict
 import yaml
 from flask import request, abort
 
-
 class RbacAccount:
     """
     Abstract base class that defines the interface for RBAC account objects.
@@ -22,6 +41,27 @@ class RbacAccount:
     role based on authentication information.
 
     All subclasses must implement the abstract methods and properties defined here.
+
+    Example:
+    .. code-block:: python
+        class Account(db.Model, RbacAccount):
+            __tablename__ = "accounts"
+            object_name = "accounts"
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            name = Column(String(64), unique=True, nullable=False)
+            # ...Other account properties here
+
+            @classmethod
+            def get_by_name(cls, account_name: str) -> Optional["Account"]:
+                return cls.query.filter_by(name=account_name).first()
+
+            def subject_role(self, x_auth_role: str) -> str:
+                operator = is_operator(self.name, x_auth_role)
+                if x_auth_role == "operator" and not operator:
+                    raise PermissionException("You are not operator")
+                if operator:
+                    return "operator"
+                return x_auth_role
     """
 
     __abstract__ = True
@@ -56,15 +96,24 @@ class RbacAccount:
     @abstractmethod
     def subject_role(self, x_auth_role: str) -> str:
         """
+
         Determines the effective role of the account based on provided authentication
         information.
+
+        This method must be implemented if RBAC instance is used with operator group options.
+        Operator group can consist of account name + role name. It is determined by the 
+        application logic.
+        
+        If you dont want to use operator group functionality, you can set
+          $ use_operator_group=False
+        in RBAC constructor. In this case, this method won't be called and
+          you can return the role as it is.
 
         This method validates the requested role against the available roles and
         returns the appropriate role value for the subject.
 
         Args:
             x_auth_role (str): The role identifier provided in authentication headers.
-            roles (Enum): Enumeration of valid roles defined in the RBAC policy.
 
         Returns:
             str: The validated role value to be used for this subject.
@@ -103,14 +152,12 @@ class Subject:
         account_name (str): The name of the account.
         role (Enum): The role assigned to this subject.
         owner (str): The owner identifier for this subject.
-        requested_object (str): The object being accessed.
-        permissions (list): List of permissions available to this subject.
         policy (dict): The policy configuration applied to this subject.
     """
 
     def __init__(self, account: RbacAccount, role: Enum, owner, policy):
         """
-        Initialize a Subject with account, role, and permission details.
+        Initialize a Subject with account, role, owner and permission details.
 
         Args:
             account (RbacAccount): The account associated with this subject.
@@ -143,6 +190,22 @@ class Subject:
         Returns:
             dict: A dictionary of filter key-value pairs to be applied 
             when accessing the object.
+        
+        Example:
+        .. code-block:: python
+            # Example implementation in a SQLAlchemy base model
+            class Base(db.Model):
+                __abstract__ = True
+
+                @property
+                @abstractmethod
+                def object_name(self):
+                    pass
+
+                @classmethod
+                def filtered(cls, subject: "Subject"):
+                    "Apply scope filters"
+                    return cls.query.filter_by(**subject.filters(cls.object_name))
         """
         return {
             key: getattr(self, value)
@@ -164,9 +227,10 @@ class RBAC:
     RBAC class to handle role-based access control.
 
     Attributes:
-        config_path (str): Path to the YAML configuration file.
-        roles (Enum): Enum of roles defined in the policy.
-        policy (Dict): Dictionary of RBAC policies.
+        policy (dict): The RBAC policy configuration loaded from the YAML file.
+        roles (Enum): Enum of roles defined in the policy configuration.
+        account_model (RbacAccount): The account model class to use for account operations.
+        use_operator_group (bool): Flag to enable operator group functionality, is True by default.
     """
 
     def __init__(
@@ -211,8 +275,8 @@ class RBAC:
             config: Dict[str, Dict[str, Dict]] = yaml.load(
                 file_handle, Loader=yaml.FullLoader
             )
-        self.policy = config.get("roles", {})
-        roles = {role.upper(): role for role in self.policy.keys()}
+        self._policy = config.get("roles", {})
+        roles = {role.upper(): role for role in self._policy.keys()}
         return Enum("Roles", roles)
 
     def _check_permission(self, subject: Subject, action: str):
@@ -241,12 +305,12 @@ class RBAC:
         """
         A decorator to enforce role-based access control for an endpoint.
 
-        This decorator validates that the requesting user has the required permissions
+        This decorator validates that the requesting subject has the required permissions
         to access the endpoint by checking:
         1. Account name from x-auth-account header
         2. Role from x-auth-role header
         3. Owner from x-auth-user header
-        4. Permission for the specified action based on the RBAC policy
+        4. Policy configuration for the current role from the RBAC configuration
 
         Args:
             action (str): The action to check permissions for, in format "object.permission"
@@ -256,11 +320,11 @@ class RBAC:
 
         Raises:
             401: If account name or role headers are missing/invalid
-            403: If the user does not have permission for the requested action
+            403: If the subject does not have permission for the requested action
 
         Example:
         .. code-block:: python
-            @app.route('/read', methods=['GET'])
+            @app.route('/users', methods=['GET'])
             @rbac.allow("users.read")
             def get_user(subject):
                 # Function implementation
@@ -295,7 +359,7 @@ class RBAC:
                 except PermissionException as e:
                     abort(403, e.message)
 
-                policy = self.policy.get(role.value, {})
+                policy = self._policy.get(role.value, {})
 
                 subject = Subject(account, role, owner, policy)
                 self._check_permission(subject, action)
@@ -308,5 +372,5 @@ class RBAC:
 
     def __repr__(self):
         roles = json.dumps([role.name for role in self._roles])
-        policy = json.dumps(self.policy, indent=2)
+        policy = json.dumps(self._policy, indent=2)
         return f"RBAC(\n" f"  roles={roles},\n" f"  policy=\n{policy},\n" f")"

@@ -13,6 +13,7 @@ build/
 dist/
 *.egg-info/
 pip-wheel-metadata/
+.pypirc
 
 # PyInstaller
 *.spec

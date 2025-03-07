@@ -4,12 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flask-rbac-icdc"
-version = "0.1.0"
+version = "0.1.2"
 description = "Flask RBAC library using YAML config file"
 authors = [{ name = "ICDC", email = "support@icdc.io" }]
 readme = "README.md"
-license = "MIT"
-license-files = ["LICEN[CS]E.*"]
+license = {file = "LICENSE"}
 dependencies = ["Flask", "PyYAML"]
 keywords = ["flask", "rbac", "yaml", "icdc"]
 classifiers = [
