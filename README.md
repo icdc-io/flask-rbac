@@ -79,13 +79,13 @@ Use the `allow` decorator to protect your endpoints:
 ```py
 @app.route('/create', methods=['POST'])
 @rbac.allow('products.create')
-def create_product():
+def create_product(subject):
     # Your logic to create a product
     return 'Product created', 201
 
 @app.route('/read', methods=['GET'])
 @rbac.allow('products.list')
-def list_products():
+def list_products(subject):
     # Your logic to list products
     return 'Products data', 200
 ```

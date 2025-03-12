@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flask_rbac_icdc.rbac &mdash; flask_rbac_icdc 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f1614fd6"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            flask_rbac_icdc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">flask_rbac_icdc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">flask_rbac_icdc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">flask_rbac_icdc.rbac</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for flask_rbac_icdc.rbac</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides role-based access control (RBAC) functionality for Flask applications.</span>
+<span class="sd">There are two modes of operation for this module:</span>
+
+<span class="sd">1.  Basic RBAC: In this mode, the RBAC module validates the role of the subject based on</span>
+<span class="sd">the role name provided in the authentication headers. The role name is validated against</span>
+<span class="sd">the roles defined in the RBAC policy configuration.</span>
+
+<span class="sd">Example:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">  rbac = RBAC(rbac_config_path, Account, use_operator_group=False)</span>
+
+<span class="sd">2.  Operator Group RBAC: In this mode, the RBAC module validates the role of the subject based</span>
+<span class="sd">on the role name and account name provided in the authentication headers. The role name is</span>
+<span class="sd">validated against the roles defined in the RBAC policy configuration, and the account name</span>
+<span class="sd">is used to determine if the subject is an operator for that account.</span>
+
+<span class="sd">Example:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">  # Default use_operator_group=True</span>
+<span class="sd">  rbac = RBAC(rbac_config_path, Account)</span>
+<span class="sd">  # or explicitly set use_operator_group=True</span>
+<span class="sd">  rbac = RBAC(rbac_config_path, Account, use_operator_group=True)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span><span class="p">,</span> <span class="n">abort</span>
+
+
+<div class="viewcode-block" id="RbacAccount">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RbacAccount">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RbacAccount</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class that defines the interface for RBAC account objects.</span>
+
+<span class="sd">    This class serves as a contract for implementing role-based access control (RBAC)</span>
+<span class="sd">    account functionality. Any concrete implementation must provide properties for</span>
+<span class="sd">    account identification and name, as well as a method to determine the subject&#39;s</span>
+<span class="sd">    role based on authentication information.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      All subclasses must implement the abstract methods and properties defined here.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">      class Account(db.Model, RbacAccount):</span>
+<span class="sd">          __tablename__ = &quot;accounts&quot;</span>
+<span class="sd">          object_name = &quot;accounts&quot;</span>
+<span class="sd">          id = Column(Integer, primary_key=True, autoincrement=True)</span>
+<span class="sd">          name = Column(String(64), unique=True, nullable=False)</span>
+<span class="sd">          # ...Other account properties here</span>
+
+<span class="sd">          @classmethod</span>
+<span class="sd">          def get_by_name(cls, account_name: str) -&gt; Optional[&quot;Account&quot;]:</span>
+<span class="sd">              return cls.query.filter_by(name=account_name).first()</span>
+
+<span class="sd">          def subject_role(self, x_auth_role: str) -&gt; str:</span>
+<span class="sd">              operator = is_operator(self.name, x_auth_role)</span>
+<span class="sd">              if x_auth_role == &quot;operator&quot; and not operator:</span>
+<span class="sd">                  raise PermissionException(&quot;You are not operator&quot;)</span>
+<span class="sd">              if operator:</span>
+<span class="sd">                  return &quot;operator&quot;</span>
+<span class="sd">              return x_auth_role</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The ID of the account.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the account.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RbacAccount.get_by_name">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RbacAccount.get_by_name">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RbacAccount&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve an account by its name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            account_name (str): The name of the account to retrieve.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RbacAccount: Account instanse or None</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          @classmethod</span>
+<span class="sd">          def get_by_name(cls, account_name: str) -&gt; Optional[&quot;Account&quot;]:</span>
+<span class="sd">              return cls.query.filter_by(name=account_name).first()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses must implement this method.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RbacAccount.subject_role">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RbacAccount.subject_role">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subject_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_auth_role</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines the effective role of the account based on provided authentication</span>
+<span class="sd">        information.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is an abstract method that must be implemented by subclasses.</span>
+
+<span class="sd">        This method must be implemented if RBAC instance is used with operator group options.</span>
+<span class="sd">        Operator group can consist of account name + role name. It is determined by the</span>
+<span class="sd">        application logic.</span>
+
+<span class="sd">        If you dont want to use operator group functionality, you can set in RBAC constructor.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            use_operator_group=False</span>
+
+<span class="sd">        In this case, this method won&#39;t be called and you can return the role as it is.</span>
+
+<span class="sd">        This method validates the requested role against the available roles and</span>
+<span class="sd">        returns the appropriate role value for the subject.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x_auth_role (str): The role identifier provided in authentication headers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The validated role value to be used for this subject.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            PermissionException: This method should raise this error, if the provided role is invalid or not allowed for this account.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Subclasses must implement this method.&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PermissionException">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.PermissionException">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when subject trying to perform an</span>
+<span class="sd">    operation without the access rights</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Subject">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.Subject">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Subject</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class represents a subject in the system, combining their account, role,</span>
+<span class="sd">    and access permissions. It facilitates role-based access control (RBAC) by</span>
+<span class="sd">    validating whether a user can perform a specific action and defining</span>
+<span class="sd">    scope-based access restrictions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        account (RbacAccount): The account associated with this subject.</span>
+<span class="sd">        account_id (int): The ID of the account.</span>
+<span class="sd">        account_name (str): The name of the account.</span>
+<span class="sd">        role (Enum): The role assigned to this subject.</span>
+<span class="sd">        owner (str): The owner identifier for this subject.</span>
+<span class="sd">        policy (dict): The policy configuration applied to this subject.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">RbacAccount</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">policy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Subject with account, role, owner and permission details.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            account (RbacAccount): The account associated with this subject.</span>
+<span class="sd">            role (Enum): The role assigned to this subject.</span>
+<span class="sd">            owner (str): The owner identifier for this subject.</span>
+<span class="sd">            action (str): The action being performed, in format &quot;object.permission&quot;.</span>
+<span class="sd">            policy (dict): The policy configuration to apply.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            PermissionException: If the subject doesn&#39;t have permission for the requested action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account_name</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">role</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">policy</span>
+
+<div class="viewcode-block" id="Subject.filters">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.Subject.filters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the filters that should be applied for this subject when</span>
+<span class="sd">        accessing a specific object.</span>
+
+<span class="sd">        Filters are used to restrict the scope of data access based</span>
+<span class="sd">        on the subject&#39;s role and attributes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): The name of the object to get filters for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary of filter key-value pairs to be applied</span>
+<span class="sd">            when accessing the object.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # Example implementation in a SQLAlchemy base model</span>
+<span class="sd">            class Base(db.Model):</span>
+<span class="sd">                __abstract__ = True</span>
+
+<span class="sd">                @property</span>
+<span class="sd">                @abstractmethod</span>
+<span class="sd">                def object_name(self):</span>
+<span class="sd">                    pass</span>
+
+<span class="sd">                @classmethod</span>
+<span class="sd">                def filtered(cls, subject: &quot;Subject&quot;):</span>
+<span class="sd">                    &quot;Apply scope filters&quot;</span>
+<span class="sd">                    return cls.query.filter_by(**subject.filters(cls.object_name))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">[</span><span class="n">object_name</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Subject(</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  role=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  account_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  account_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;)&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="RBAC">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RBAC">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RBAC</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    RBAC class to handle role-based access control.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        policy (dict): The RBAC policy configuration loaded from the YAML file.</span>
+<span class="sd">        roles (Enum): Enum of roles defined in the policy configuration.</span>
+<span class="sd">        account_model (RbacAccount): The account model class to use for account operations.</span>
+<span class="sd">        use_operator_group (bool): Flag to enable operator group functionality, is True by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">account_model</span><span class="p">:</span> <span class="n">RbacAccount</span><span class="p">,</span>
+        <span class="n">use_operator_group</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the RBAC instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config_path (str): Path to the YAML configuration file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_roles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_account_model</span> <span class="o">=</span> <span class="n">account_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_operator_group</span> <span class="o">=</span> <span class="n">use_operator_group</span>
+
+<div class="viewcode-block" id="RBAC.load_config">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RBAC.load_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load RBAC configuration from a YAML file.</span>
+
+<span class="sd">        This function reads the role-based access control configuration from a YAML file</span>
+<span class="sd">        and returns the parsed configuration as a dictionary. The configuration defines</span>
+<span class="sd">        roles, their permissions for different resources, and any filters that should be</span>
+<span class="sd">        applied when accessing those resources.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config_file (str): Path to the YAML configuration file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Parsed RBAC configuration containing roles, permissions, and filters.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: If the specified configuration file does not exist.</span>
+<span class="sd">            yaml.YAMLError: If the configuration file contains invalid YAML syntax.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RBAC config file not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_handle</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                <span class="n">file_handle</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_policy</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;roles&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">roles</span> <span class="o">=</span> <span class="p">{</span><span class="n">role</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span> <span class="n">role</span> <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policy</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">&quot;Roles&quot;</span><span class="p">,</span> <span class="n">roles</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the subject has permission to perform the specified action.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subject (Subject): The subject requesting access.</span>
+<span class="sd">            action (str): The action to check permissions for, in format &quot;object.permission&quot;.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            PermissionException: If the subject doesn&#39;t have permission for the requested action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">requested_object</span><span class="p">,</span> <span class="n">requested_permission</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Check if object exists in policy</span>
+        <span class="k">if</span> <span class="n">requested_object</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subject</span><span class="o">.</span><span class="n">policy</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Access to </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> forbidden for role </span><span class="si">{</span><span class="n">subject</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if permission exists for the object</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">policy</span><span class="p">[</span><span class="n">requested_object</span><span class="p">][</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">requested_permission</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Access to </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> forbidden for role </span><span class="si">{</span><span class="n">subject</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RBAC.allow">
+<a class="viewcode-back" href="../../flask_rbac_icdc.html#flask_rbac_icdc.rbac.RBAC.allow">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">allow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A decorator to enforce role-based access control for an endpoint.</span>
+
+<span class="sd">        This decorator validates that the requesting subject has the required permissions</span>
+<span class="sd">        to access the endpoint by checking:</span>
+<span class="sd">        1. Account name from x-auth-account header</span>
+<span class="sd">        2. Role from x-auth-role header</span>
+<span class="sd">        3. Owner from x-auth-user header</span>
+<span class="sd">        4. Policy configuration for the current role from the RBAC configuration</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action (str): The action to check permissions for, in format &quot;object.permission&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            function: Decorated function that includes RBAC permission check</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Unauthorized 401: If account name or role headers are missing/invalid.</span>
+<span class="sd">            Forbidden 403: If the subject does not have permission for the requested action.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            @app.route(&#39;/users&#39;, methods=[&#39;GET&#39;])</span>
+<span class="sd">            @rbac.allow(&quot;users.read&quot;)</span>
+<span class="sd">            def get_user(subject):</span>
+<span class="sd">              # Function implementation</span>
+<span class="sd">              pass</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="n">account_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-auth-account&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">account_name</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Account name is required in x-auth-account header.&quot;</span><span class="p">)</span>
+
+                <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account_model</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">account_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Invalid auth parameters. Account name is not found.&quot;</span><span class="p">)</span>
+
+                <span class="n">owner</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-auth-user&quot;</span><span class="p">)</span>
+
+                <span class="n">role_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-auth-role&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">role_name</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Role name is required in x-auth-role header.&quot;</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">x_auth_role</span> <span class="o">=</span> <span class="n">role_name</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_operator_group</span><span class="p">:</span>
+                        <span class="n">x_auth_role</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">subject_role</span><span class="p">(</span><span class="n">role_name</span><span class="p">)</span>
+                    <span class="c1"># throws ValueError if role_name not in Roles enum</span>
+                    <span class="n">role</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roles</span><span class="p">(</span><span class="n">x_auth_role</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Invalid auth parameters. Role name is not found.&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">PermissionException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+                <span class="n">policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">role</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">{})</span>
+
+                <span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_permission</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">wrap</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">roles</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">role</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roles</span><span class="p">])</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_policy</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;RBAC(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;  roles=</span><span class="si">{</span><span class="n">roles</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;  policy=</span><span class="se">\n</span><span class="si">{</span><span class="n">policy</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;)&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ICDC Vitali Starastsenka.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

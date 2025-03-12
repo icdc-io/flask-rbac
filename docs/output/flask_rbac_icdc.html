@@ -1,0 +1,841 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flask_rbac_icdc package &mdash; flask_rbac_icdc 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f1614fd6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="flask_rbac_icdc" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            flask_rbac_icdc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">flask_rbac_icdc</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">flask_rbac_icdc package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-flask_rbac_icdc.rbac">flask_rbac_icdc.rbac module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.rbac.PermissionException"><code class="docutils literal notranslate"><span class="pre">PermissionException</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.rbac.RBAC"><code class="docutils literal notranslate"><span class="pre">RBAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.rbac.RbacAccount"><code class="docutils literal notranslate"><span class="pre">RbacAccount</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.rbac.Subject"><code class="docutils literal notranslate"><span class="pre">Subject</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-flask_rbac_icdc">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.PermissionException"><code class="docutils literal notranslate"><span class="pre">PermissionException</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.RBAC"><code class="docutils literal notranslate"><span class="pre">RBAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.RbacAccount"><code class="docutils literal notranslate"><span class="pre">RbacAccount</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flask_rbac_icdc.Subject"><code class="docutils literal notranslate"><span class="pre">Subject</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">flask_rbac_icdc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">flask_rbac_icdc</a></li>
+      <li class="breadcrumb-item active">flask_rbac_icdc package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/flask_rbac_icdc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="flask-rbac-icdc-package">
+<h1>flask_rbac_icdc package<a class="headerlink" href="#flask-rbac-icdc-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-flask_rbac_icdc.rbac">
+<span id="flask-rbac-icdc-rbac-module"></span><h2>flask_rbac_icdc.rbac module<a class="headerlink" href="#module-flask_rbac_icdc.rbac" title="Link to this heading"></a></h2>
+<p>This module provides role-based access control (RBAC) functionality for Flask applications.
+There are two modes of operation for this module:</p>
+<p>1.  Basic RBAC: In this mode, the RBAC module validates the role of the subject based on
+the role name provided in the authentication headers. The role name is validated against
+the roles defined in the RBAC policy configuration.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">rbac_config_path</span><span class="p">,</span> <span class="n">Account</span><span class="p">,</span> <span class="n">use_operator_group</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2.  Operator Group RBAC: In this mode, the RBAC module validates the role of the subject based
+on the role name and account name provided in the authentication headers. The role name is
+validated against the roles defined in the RBAC policy configuration, and the account name
+is used to determine if the subject is an operator for that account.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Default use_operator_group=True</span>
+<span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">rbac_config_path</span><span class="p">,</span> <span class="n">Account</span><span class="p">)</span>
+<span class="c1"># or explicitly set use_operator_group=True</span>
+<span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">rbac_config_path</span><span class="p">,</span> <span class="n">Account</span><span class="p">,</span> <span class="n">use_operator_group</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py exception">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.PermissionException">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.rbac.</span></span><span class="sig-name descname"><span class="pre">PermissionException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#PermissionException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.PermissionException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when subject trying to perform an
+operation without the access rights</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.rbac.</span></span><span class="sig-name descname"><span class="pre">RBAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_operator_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>RBAC class to handle role-based access control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.policy" title="Link to this definition"></a></dt>
+<dd><p>The RBAC policy configuration loaded from the YAML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.roles">
+<span class="sig-name descname"><span class="pre">roles</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.roles" title="Link to this definition"></a></dt>
+<dd><p>Enum of roles defined in the policy configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.account_model">
+<span class="sig-name descname"><span class="pre">account_model</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.account_model" title="Link to this definition"></a></dt>
+<dd><p>The account model class to use for account operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.rbac.RbacAccount" title="flask_rbac_icdc.rbac.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.use_operator_group">
+<span class="sig-name descname"><span class="pre">use_operator_group</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.use_operator_group" title="Link to this definition"></a></dt>
+<dd><p>Flag to enable operator group functionality, is True by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.allow">
+<span class="sig-name descname"><span class="pre">allow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC.allow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.allow" title="Link to this definition"></a></dt>
+<dd><p>A decorator to enforce role-based access control for an endpoint.</p>
+<p>This decorator validates that the requesting subject has the required permissions
+to access the endpoint by checking:
+1. Account name from x-auth-account header
+2. Role from x-auth-role header
+3. Owner from x-auth-user header
+4. Policy configuration for the current role from the RBAC configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>str</em>) -- The action to check permissions for, in format &quot;object.permission&quot;</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decorated function that includes RBAC permission check</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Unauthorized 401</strong> -- If account name or role headers are missing/invalid.</p></li>
+<li><p><strong>Forbidden 403</strong> -- If the subject does not have permission for the requested action.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@rbac</span><span class="o">.</span><span class="n">allow</span><span class="p">(</span><span class="s2">&quot;users.read&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">subject</span><span class="p">):</span>
+  <span class="c1"># Function implementation</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RBAC.load_config">
+<span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC.load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RBAC.load_config" title="Link to this definition"></a></dt>
+<dd><p>Load RBAC configuration from a YAML file.</p>
+<p>This function reads the role-based access control configuration from a YAML file
+and returns the parsed configuration as a dictionary. The configuration defines
+roles, their permissions for different resources, and any filters that should be
+applied when accessing those resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_file</strong> (<em>str</em>) -- Path to the YAML configuration file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parsed RBAC configuration containing roles, permissions, and filters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> -- If the specified configuration file does not exist.</p></li>
+<li><p><strong>yaml.YAMLError</strong> -- If the configuration file contains invalid YAML syntax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RbacAccount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.rbac.</span></span><span class="sig-name descname"><span class="pre">RbacAccount</span></span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RbacAccount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract base class that defines the interface for RBAC account objects.</p>
+<p>This class serves as a contract for implementing role-based access control (RBAC)
+account functionality. Any concrete implementation must provide properties for
+account identification and name, as well as a method to determine the subject's
+role based on authentication information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All subclasses must implement the abstract methods and properties defined here.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Account</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">RbacAccount</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
+    <span class="n">object_name</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># ...Other account properties here</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">account_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">subject_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_auth_role</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="n">is_operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x_auth_role</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_auth_role</span> <span class="o">==</span> <span class="s2">&quot;operator&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionException</span><span class="p">(</span><span class="s2">&quot;You are not operator&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;operator&quot;</span>
+        <span class="k">return</span> <span class="n">x_auth_role</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RbacAccount.get_by_name">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount.get_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RbacAccount.get_by_name" title="Link to this definition"></a></dt>
+<dd><p>Retrieve an account by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>account_name</strong> (<em>str</em>) -- The name of the account to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Account instanse or None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.rbac.RbacAccount" title="flask_rbac_icdc.rbac.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">account_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RbacAccount.id">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#flask_rbac_icdc.rbac.RbacAccount.id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the account.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RbacAccount.name">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#flask_rbac_icdc.rbac.RbacAccount.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the account.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.RbacAccount.subject_role">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_auth_role</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount.subject_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.RbacAccount.subject_role" title="Link to this definition"></a></dt>
+<dd><p>Determines the effective role of the account based on provided authentication
+information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an abstract method that must be implemented by subclasses.</p>
+</div>
+<p>This method must be implemented if RBAC instance is used with operator group options.
+Operator group can consist of account name + role name. It is determined by the
+application logic.</p>
+<p>If you dont want to use operator group functionality, you can set in RBAC constructor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">use_operator_group</span><span class="o">=</span><span class="kc">False</span>
+</pre></div>
+</div>
+<p>In this case, this method won't be called and you can return the role as it is.</p>
+<p>This method validates the requested role against the available roles and
+returns the appropriate role value for the subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_auth_role</strong> (<em>str</em>) -- The role identifier provided in authentication headers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The validated role value to be used for this subject.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#flask_rbac_icdc.rbac.PermissionException" title="flask_rbac_icdc.rbac.PermissionException"><strong>PermissionException</strong></a> -- This method should raise this error, if the provided role is invalid or not allowed for this account.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.rbac.</span></span><span class="sig-name descname"><span class="pre">Subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#Subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class represents a subject in the system, combining their account, role,
+and access permissions. It facilitates role-based access control (RBAC) by
+validating whether a user can perform a specific action and defining
+scope-based access restrictions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.account">
+<span class="sig-name descname"><span class="pre">account</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.account" title="Link to this definition"></a></dt>
+<dd><p>The account associated with this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.rbac.RbacAccount" title="flask_rbac_icdc.rbac.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.account_id">
+<span class="sig-name descname"><span class="pre">account_id</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.account_id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.account_name">
+<span class="sig-name descname"><span class="pre">account_name</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.account_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.role">
+<span class="sig-name descname"><span class="pre">role</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.role" title="Link to this definition"></a></dt>
+<dd><p>The role assigned to this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.owner" title="Link to this definition"></a></dt>
+<dd><p>The owner identifier for this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.policy" title="Link to this definition"></a></dt>
+<dd><p>The policy configuration applied to this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.rbac.Subject.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#Subject.filters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.rbac.Subject.filters" title="Link to this definition"></a></dt>
+<dd><p>Get the filters that should be applied for this subject when
+accessing a specific object.</p>
+<p>Filters are used to restrict the scope of data access based
+on the subject's role and attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object_name</strong> (<em>str</em>) -- The name of the object to get filters for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of filter key-value pairs to be applied
+when accessing the object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example implementation in a SQLAlchemy base model</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">object_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filtered</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Subject&quot;</span><span class="p">):</span>
+        <span class="s2">&quot;Apply scope filters&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="o">**</span><span class="n">subject</span><span class="o">.</span><span class="n">filters</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">object_name</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-flask_rbac_icdc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-flask_rbac_icdc" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="flask_rbac_icdc.PermissionException">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.</span></span><span class="sig-name descname"><span class="pre">PermissionException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#PermissionException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.PermissionException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when subject trying to perform an
+operation without the access rights</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.</span></span><span class="sig-name descname"><span class="pre">RBAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_operator_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RBAC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>RBAC class to handle role-based access control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><a class="headerlink" href="#flask_rbac_icdc.RBAC.policy" title="Link to this definition"></a></dt>
+<dd><p>The RBAC policy configuration loaded from the YAML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.roles">
+<span class="sig-name descname"><span class="pre">roles</span></span><a class="headerlink" href="#flask_rbac_icdc.RBAC.roles" title="Link to this definition"></a></dt>
+<dd><p>Enum of roles defined in the policy configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.account_model">
+<span class="sig-name descname"><span class="pre">account_model</span></span><a class="headerlink" href="#flask_rbac_icdc.RBAC.account_model" title="Link to this definition"></a></dt>
+<dd><p>The account model class to use for account operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.RbacAccount" title="flask_rbac_icdc.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.use_operator_group">
+<span class="sig-name descname"><span class="pre">use_operator_group</span></span><a class="headerlink" href="#flask_rbac_icdc.RBAC.use_operator_group" title="Link to this definition"></a></dt>
+<dd><p>Flag to enable operator group functionality, is True by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.allow">
+<span class="sig-name descname"><span class="pre">allow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC.allow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RBAC.allow" title="Link to this definition"></a></dt>
+<dd><p>A decorator to enforce role-based access control for an endpoint.</p>
+<p>This decorator validates that the requesting subject has the required permissions
+to access the endpoint by checking:
+1. Account name from x-auth-account header
+2. Role from x-auth-role header
+3. Owner from x-auth-user header
+4. Policy configuration for the current role from the RBAC configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>str</em>) -- The action to check permissions for, in format &quot;object.permission&quot;</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decorated function that includes RBAC permission check</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Unauthorized 401</strong> -- If account name or role headers are missing/invalid.</p></li>
+<li><p><strong>Forbidden 403</strong> -- If the subject does not have permission for the requested action.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/users&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="nd">@rbac</span><span class="o">.</span><span class="n">allow</span><span class="p">(</span><span class="s2">&quot;users.read&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">subject</span><span class="p">):</span>
+  <span class="c1"># Function implementation</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RBAC.load_config">
+<span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RBAC.load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RBAC.load_config" title="Link to this definition"></a></dt>
+<dd><p>Load RBAC configuration from a YAML file.</p>
+<p>This function reads the role-based access control configuration from a YAML file
+and returns the parsed configuration as a dictionary. The configuration defines
+roles, their permissions for different resources, and any filters that should be
+applied when accessing those resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_file</strong> (<em>str</em>) -- Path to the YAML configuration file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parsed RBAC configuration containing roles, permissions, and filters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> -- If the specified configuration file does not exist.</p></li>
+<li><p><strong>yaml.YAMLError</strong> -- If the configuration file contains invalid YAML syntax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RbacAccount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.</span></span><span class="sig-name descname"><span class="pre">RbacAccount</span></span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RbacAccount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract base class that defines the interface for RBAC account objects.</p>
+<p>This class serves as a contract for implementing role-based access control (RBAC)
+account functionality. Any concrete implementation must provide properties for
+account identification and name, as well as a method to determine the subject's
+role based on authentication information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All subclasses must implement the abstract methods and properties defined here.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Account</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">RbacAccount</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
+    <span class="n">object_name</span> <span class="o">=</span> <span class="s2">&quot;accounts&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># ...Other account properties here</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">account_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">subject_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_auth_role</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="n">is_operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x_auth_role</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_auth_role</span> <span class="o">==</span> <span class="s2">&quot;operator&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionException</span><span class="p">(</span><span class="s2">&quot;You are not operator&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;operator&quot;</span>
+        <span class="k">return</span> <span class="n">x_auth_role</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RbacAccount.get_by_name">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount.get_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RbacAccount.get_by_name" title="Link to this definition"></a></dt>
+<dd><p>Retrieve an account by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>account_name</strong> (<em>str</em>) -- The name of the account to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Account instanse or None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.RbacAccount" title="flask_rbac_icdc.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_by_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">account_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RbacAccount.id">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#flask_rbac_icdc.RbacAccount.id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the account.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RbacAccount.name">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#flask_rbac_icdc.RbacAccount.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the account.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.RbacAccount.subject_role">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_auth_role</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#RbacAccount.subject_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.RbacAccount.subject_role" title="Link to this definition"></a></dt>
+<dd><p>Determines the effective role of the account based on provided authentication
+information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an abstract method that must be implemented by subclasses.</p>
+</div>
+<p>This method must be implemented if RBAC instance is used with operator group options.
+Operator group can consist of account name + role name. It is determined by the
+application logic.</p>
+<p>If you dont want to use operator group functionality, you can set in RBAC constructor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">use_operator_group</span><span class="o">=</span><span class="kc">False</span>
+</pre></div>
+</div>
+<p>In this case, this method won't be called and you can return the role as it is.</p>
+<p>This method validates the requested role against the available roles and
+returns the appropriate role value for the subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_auth_role</strong> (<em>str</em>) -- The role identifier provided in authentication headers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The validated role value to be used for this subject.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#flask_rbac_icdc.PermissionException" title="flask_rbac_icdc.PermissionException"><strong>PermissionException</strong></a> -- This method should raise this error, if the provided role is invalid or not allowed for this account.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask_rbac_icdc.</span></span><span class="sig-name descname"><span class="pre">Subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#Subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.Subject" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class represents a subject in the system, combining their account, role,
+and access permissions. It facilitates role-based access control (RBAC) by
+validating whether a user can perform a specific action and defining
+scope-based access restrictions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.account">
+<span class="sig-name descname"><span class="pre">account</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.account" title="Link to this definition"></a></dt>
+<dd><p>The account associated with this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flask_rbac_icdc.RbacAccount" title="flask_rbac_icdc.RbacAccount">RbacAccount</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.account_id">
+<span class="sig-name descname"><span class="pre">account_id</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.account_id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.account_name">
+<span class="sig-name descname"><span class="pre">account_name</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.account_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.role">
+<span class="sig-name descname"><span class="pre">role</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.role" title="Link to this definition"></a></dt>
+<dd><p>The role assigned to this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.owner" title="Link to this definition"></a></dt>
+<dd><p>The owner identifier for this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><a class="headerlink" href="#flask_rbac_icdc.Subject.policy" title="Link to this definition"></a></dt>
+<dd><p>The policy configuration applied to this subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask_rbac_icdc.Subject.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flask_rbac_icdc/rbac.html#Subject.filters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flask_rbac_icdc.Subject.filters" title="Link to this definition"></a></dt>
+<dd><p>Get the filters that should be applied for this subject when
+accessing a specific object.</p>
+<p>Filters are used to restrict the scope of data access based
+on the subject's role and attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object_name</strong> (<em>str</em>) -- The name of the object to get filters for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of filter key-value pairs to be applied
+when accessing the object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example implementation in a SQLAlchemy base model</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">object_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filtered</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Subject&quot;</span><span class="p">):</span>
+        <span class="s2">&quot;Apply scope filters&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="o">**</span><span class="n">subject</span><span class="o">.</span><span class="n">filters</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">object_name</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="flask_rbac_icdc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ICDC Vitali Starastsenka.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

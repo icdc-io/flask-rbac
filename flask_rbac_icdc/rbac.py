@@ -1,25 +1,30 @@
 """
 This module provides role-based access control (RBAC) functionality for Flask applications.
 There are two modes of operation for this module:
+
 1.  Basic RBAC: In this mode, the RBAC module validates the role of the subject based on
-    the role name provided in the authentication headers. The role name is validated against
-    the roles defined in the RBAC policy configuration.
+the role name provided in the authentication headers. The role name is validated against
+the roles defined in the RBAC policy configuration.
 
 Example:
+
 .. code-block:: python
-    rbac = RBAC(rbac_config_path, Account, use_operator_group=False)
+
+  rbac = RBAC(rbac_config_path, Account, use_operator_group=False)
 
 2.  Operator Group RBAC: In this mode, the RBAC module validates the role of the subject based
-    on the role name and account name provided in the authentication headers. The role name is
-    validated against the roles defined in the RBAC policy configuration, and the account name
-    is used to determine if the subject is an operator for that account.
+on the role name and account name provided in the authentication headers. The role name is
+validated against the roles defined in the RBAC policy configuration, and the account name
+is used to determine if the subject is an operator for that account.
 
 Example:
+
 .. code-block:: python
-    # Default use_operator_group=True
-    rbac = RBAC(rbac_config_path, Account)
-    # or explicitly set use_operator_group=True
-    rbac = RBAC(rbac_config_path, Account, use_operator_group=True)
+
+  # Default use_operator_group=True
+  rbac = RBAC(rbac_config_path, Account)
+  # or explicitly set use_operator_group=True
+  rbac = RBAC(rbac_config_path, Account, use_operator_group=True)
 """
 
 from abc import abstractmethod
@@ -31,6 +36,7 @@ from typing import Dict
 import yaml
 from flask import request, abort
 
+
 class RbacAccount:
     """
     Abstract base class that defines the interface for RBAC account objects.
@@ -40,28 +46,31 @@ class RbacAccount:
     account identification and name, as well as a method to determine the subject's
     role based on authentication information.
 
-    All subclasses must implement the abstract methods and properties defined here.
+    Note:
+      All subclasses must implement the abstract methods and properties defined here.
 
     Example:
+
     .. code-block:: python
-        class Account(db.Model, RbacAccount):
-            __tablename__ = "accounts"
-            object_name = "accounts"
-            id = Column(Integer, primary_key=True, autoincrement=True)
-            name = Column(String(64), unique=True, nullable=False)
-            # ...Other account properties here
 
-            @classmethod
-            def get_by_name(cls, account_name: str) -> Optional["Account"]:
-                return cls.query.filter_by(name=account_name).first()
+      class Account(db.Model, RbacAccount):
+          __tablename__ = "accounts"
+          object_name = "accounts"
+          id = Column(Integer, primary_key=True, autoincrement=True)
+          name = Column(String(64), unique=True, nullable=False)
+          # ...Other account properties here
 
-            def subject_role(self, x_auth_role: str) -> str:
-                operator = is_operator(self.name, x_auth_role)
-                if x_auth_role == "operator" and not operator:
-                    raise PermissionException("You are not operator")
-                if operator:
-                    return "operator"
-                return x_auth_role
+          @classmethod
+          def get_by_name(cls, account_name: str) -> Optional["Account"]:
+              return cls.query.filter_by(name=account_name).first()
+
+          def subject_role(self, x_auth_role: str) -> str:
+              operator = is_operator(self.name, x_auth_role)
+              if x_auth_role == "operator" and not operator:
+                  raise PermissionException("You are not operator")
+              if operator:
+                  return "operator"
+              return x_auth_role
     """
 
     __abstract__ = True
@@ -85,8 +94,13 @@ class RbacAccount:
         Args:
             account_name (str): The name of the account to retrieve.
 
+        Returns:
+            RbacAccount: Account instanse or None
+
         Example:
+
         .. code-block:: python
+
           @classmethod
           def get_by_name(cls, account_name: str) -> Optional["Account"]:
               return cls.query.filter_by(name=account_name).first()
@@ -96,18 +110,23 @@ class RbacAccount:
     @abstractmethod
     def subject_role(self, x_auth_role: str) -> str:
         """
-
         Determines the effective role of the account based on provided authentication
         information.
 
+        Note:
+            This is an abstract method that must be implemented by subclasses.
+
         This method must be implemented if RBAC instance is used with operator group options.
-        Operator group can consist of account name + role name. It is determined by the 
+        Operator group can consist of account name + role name. It is determined by the
         application logic.
-        
-        If you dont want to use operator group functionality, you can set
-          $ use_operator_group=False
-        in RBAC constructor. In this case, this method won't be called and
-          you can return the role as it is.
+
+        If you dont want to use operator group functionality, you can set in RBAC constructor.
+
+        .. code-block:: python
+
+            use_operator_group=False
+
+        In this case, this method won't be called and you can return the role as it is.
 
         This method validates the requested role against the available roles and
         returns the appropriate role value for the subject.
@@ -119,11 +138,7 @@ class RbacAccount:
             str: The validated role value to be used for this subject.
 
         Raises:
-            PermissionException: This method should raise this error,
-            if the provided role is invalid or not allowed for this account.
-
-        Note:
-            This is an abstract method that must be implemented by subclasses.
+            PermissionException: This method should raise this error, if the provided role is invalid or not allowed for this account.
         """
         raise NotImplementedError("Subclasses must implement this method.")
 
@@ -178,21 +193,23 @@ class Subject:
 
     def filters(self, object_name: str):
         """
-        Get the filters that should be applied for this subject when 
+        Get the filters that should be applied for this subject when
         accessing a specific object.
 
-        Filters are used to restrict the scope of data access based 
+        Filters are used to restrict the scope of data access based
         on the subject's role and attributes.
 
         Args:
             object_name (str): The name of the object to get filters for.
 
         Returns:
-            dict: A dictionary of filter key-value pairs to be applied 
+            dict: A dictionary of filter key-value pairs to be applied
             when accessing the object.
-        
+
         Example:
+
         .. code-block:: python
+
             # Example implementation in a SQLAlchemy base model
             class Base(db.Model):
                 __abstract__ = True
@@ -319,16 +336,19 @@ class RBAC:
             function: Decorated function that includes RBAC permission check
 
         Raises:
-            401: If account name or role headers are missing/invalid
-            403: If the subject does not have permission for the requested action
+            Unauthorized 401: If account name or role headers are missing/invalid.
+            Forbidden 403: If the subject does not have permission for the requested action.
 
         Example:
+
         .. code-block:: python
+
             @app.route('/users', methods=['GET'])
             @rbac.allow("users.read")
             def get_user(subject):
-                # Function implementation
-                pass
+              # Function implementation
+              pass
+
         """
 
         def wrapper(func):
