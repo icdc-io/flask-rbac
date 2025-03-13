@@ -7,6 +7,9 @@ source venv/bin/activate
 
 # Run unit tests
 # pytest tests -v
+echo "==============================================="
+echo "Running unit tests..."
+echo "==============================================="
 python -m unittest ./tests/test_rbac.py -v
 if [ $? -ne 0 ]; then
     echo "Unit tests failed"
@@ -16,12 +19,26 @@ else
 fi
 
 # Create documentation
-rm -rf docs/output
-sphinx-apidoc -o ./docs/source ./flask_rbac_icdc
-sphinx-build -b html docs/source docs/output
-
+echo "==============================================="
+echo "Creating documentation..."
+echo "==============================================="
+sphinx-build -E -a -b html docs/source docs/build
+if [ $? -ne 0 ]; then
+    echo "Error: Documentation failed"
+else
+    echo "Documentation created successfuly"
+    # Commit and push the documentation
+    cd docs/build
+    git add .
+    git commit -m "Update documentation"
+    git push origin main
+    cd ../..
+    echo "Documentation pushed to GitHub"
+fi
 # Clean up previous builds
+echo "==============================================="
 echo "Cleaning up previous builds..."
+echo "==============================================="
 rm -rf dist/ build/ *.egg-info/
 
 # Build the package
@@ -32,7 +49,9 @@ python -m build
 TOKEN=$(keyring get testpypi __token__)
 
 # Upload to TestPyPI using twine and the retrieved password
+echo "==============================================="
 echo "Uploading to TestPyPI..."
+echo "==============================================="
 python -m twine upload --repository testpypi dist/* -u __token__ -p $TOKEN --non-interactive  --verbose
 
 # Optional: Print success message

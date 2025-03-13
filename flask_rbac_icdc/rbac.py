@@ -1,8 +1,7 @@
 """
 This module provides role-based access control (RBAC) functionality for Flask applications.
-There are two modes of operation for this module:
 
-1.  Basic RBAC: In this mode, the RBAC module validates the role of the subject based on
+The RBAC module validates the role of the subject based on
 the role name provided in the authentication headers. The role name is validated against
 the roles defined in the RBAC policy configuration.
 
@@ -10,21 +9,10 @@ Example:
 
 .. code-block:: python
 
-  rbac = RBAC(rbac_config_path, Account, use_operator_group=False)
-
-2.  Operator Group RBAC: In this mode, the RBAC module validates the role of the subject based
-on the role name and account name provided in the authentication headers. The role name is
-validated against the roles defined in the RBAC policy configuration, and the account name
-is used to determine if the subject is an operator for that account.
-
-Example:
-
-.. code-block:: python
-
-  # Default use_operator_group=True
   rbac = RBAC(rbac_config_path, Account)
-  # or explicitly set use_operator_group=True
-  rbac = RBAC(rbac_config_path, Account, use_operator_group=True)
+
+If it is necessary to implement more advanced conditional role assignment, you can override 
+the `RbacAccount.get_role` method to achieve this.
 """
 
 from abc import abstractmethod
@@ -64,13 +52,13 @@ class RbacAccount:
           def get_by_name(cls, account_name: str) -> Optional["Account"]:
               return cls.query.filter_by(name=account_name).first()
 
-          def subject_role(self, x_auth_role: str) -> str:
-              operator = is_operator(self.name, x_auth_role)
-              if x_auth_role == "operator" and not operator:
+          def get_role(self, requested_role: str) -> str:
+              operator = is_operator(self.name, requested_role)
+              if requested_role == "operator" and not operator:
                   raise PermissionException("You are not operator")
               if operator:
                   return "operator"
-              return x_auth_role
+              return requested_role
     """
 
     __abstract__ = True
@@ -108,39 +96,27 @@ class RbacAccount:
         raise NotImplementedError("Subclasses must implement this method.")
 
     @abstractmethod
-    def subject_role(self, x_auth_role: str) -> str:
+    def get_role(self, requested_role: str) -> str:
         """
         Determines the effective role of the account based on provided authentication
         information.
 
         Note:
-            This is an abstract method that must be implemented by subclasses.
+            This is an abstract method that can be implemented by subclasses.
 
-        This method must be implemented if RBAC instance is used with operator group options.
-        Operator group can consist of account name + role name. It is determined by the
-        application logic.
-
-        If you dont want to use operator group functionality, you can set in RBAC constructor.
-
-        .. code-block:: python
-
-            use_operator_group=False
-
-        In this case, this method won't be called and you can return the role as it is.
-
-        This method validates the requested role against the available roles and
-        returns the appropriate role value for the subject.
+        This method can be used for more complex checks on a requested role or for conditional 
+        granting of another role for the subject.
 
         Args:
-            x_auth_role (str): The role identifier provided in authentication headers.
+            requested_role (str): The role identifier provided in authentication headers.
 
         Returns:
-            str: The validated role value to be used for this subject.
+            str: The granted role value to be used for this subject.
 
         Raises:
             PermissionException: This method should raise this error, if the provided role is invalid or not allowed for this account.
         """
-        raise NotImplementedError("Subclasses must implement this method.")
+        return requested_role
 
 
 class PermissionException(Exception):
@@ -364,24 +340,22 @@ class RBAC:
 
                 owner = request.headers.get("x-auth-user")
 
-                role_name = request.headers.get("x-auth-role")
-                if not role_name:
+                requested_role = request.headers.get("x-auth-role")
+                if not requested_role:
                     abort(401, "Role name is required in x-auth-role header.")
 
                 try:
-                    x_auth_role = role_name
-                    if self._use_operator_group:
-                        x_auth_role = account.subject_role(role_name)
+                    granted_role = account.get_role(requested_role)
                     # throws ValueError if role_name not in Roles enum
-                    role = self._roles(x_auth_role)
+                    subject_role = self._roles(granted_role)
                 except ValueError:
                     abort(401, "Invalid auth parameters. Role name is not found.")
                 except PermissionException as e:
                     abort(403, e.message)
 
-                policy = self._policy.get(role.value, {})
+                policy = self._policy.get(subject_role.value, {})
 
-                subject = Subject(account, role, owner, policy)
+                subject = Subject(account, subject_role, owner, policy)
                 self._check_permission(subject, action)
                 kwargs["subject"] = subject
                 return func(*args, **kwargs)

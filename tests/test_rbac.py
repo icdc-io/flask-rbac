@@ -74,13 +74,13 @@ class MockAccount(RbacAccount):
             None,
         )
 
-    def subject_role(self, x_auth_role):
+    def get_role(self, requested_role):
         # Simulate operator group for account=devel and role=admin
-        if x_auth_role == "operator":
+        if requested_role == "operator":
             raise PermissionException("You are not operator")
-        if self.name == "devel" and x_auth_role == "admin":
+        if self.name == "devel" and requested_role == "admin":
             return "operator"
-        return x_auth_role
+        return requested_role
 
 
 rbac_config_path = os.path.join(
