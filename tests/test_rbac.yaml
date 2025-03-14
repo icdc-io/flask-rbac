@@ -1,0 +1,36 @@
+roles:
+  operator:
+    products:
+      permissions:
+        - list
+        - create
+        - update
+        - delete
+      filters: {}
+    accounts:
+      permissions:
+        - list
+        - get
+        - create
+        - delete
+      filters: {}
+  admin:
+    products:
+      permissions:
+        - list
+        - create
+        - update
+      filters: {}
+    accounts:
+      permissions:
+        - list
+        - get
+      filters:
+        id: account_id
+  member:
+    products:
+      permissions:
+        - list
+      filters:
+        account_id: account_id
+        owner: owner
