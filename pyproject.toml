@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flask-rbac-icdc"
-version = "0.1.3"
+version = "0.1.4"
 description = "Flask RBAC library using YAML config file"
 authors = [
   { name = "ICDC", email = "support@icdc.io" },
@@ -22,7 +22,6 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
   "Framework :: Flask",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
 [tool.setuptools]
