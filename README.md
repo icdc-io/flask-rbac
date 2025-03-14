@@ -56,13 +56,13 @@ class Account(db.Model, RbacAccount):
     def get_by_name(cls, account_name: str) -> Optional["Account"]:
         return cls.query.filter_by(name=account_name).first()
 
-    def subject_role(self, x_auth_role: str) -> str:
-        operator = is_operator(self.name, x_auth_role)
-        if x_auth_role == "operator" and not operator:
+    def get_role(self, requested_role: str) -> str:
+        operator = is_operator(self.name, requested_role)
+        if requested_role == "operator" and not operator:
             raise PermissionException("You are not operator")
         if operator:
             return "operator"
-        return x_auth_role
+        return requested_role
 ```
 
 ### Initialize RBAC
