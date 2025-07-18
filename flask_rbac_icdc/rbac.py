@@ -11,7 +11,7 @@ Example:
 
   rbac = RBAC(rbac_config_path, Account)
 
-If it is necessary to implement more advanced conditional role assignment, you can override 
+If it is necessary to implement more advanced conditional role assignment, you can override
 the `RbacAccount.get_role` method to achieve this.
 """
 
@@ -23,6 +23,7 @@ import os
 from typing import Dict
 import yaml
 from flask import request, abort
+import jsonschema
 
 
 class RbacAccount:
@@ -104,7 +105,7 @@ class RbacAccount:
         Note:
             This is an abstract method that can be implemented by subclasses.
 
-        This method can be used for more complex checks on a requested role or for conditional 
+        This method can be used for more complex checks on a requested role or for conditional
         granting of another role for the subject.
 
         Args:
@@ -223,6 +224,8 @@ class RBAC:
         policy (dict): The RBAC policy configuration loaded from the YAML file.
         roles (Enum): Enum of roles defined in the policy configuration.
         account_model (RbacAccount): The account model class to use for account operations.
+        validate (bool): Flag to enable validation of the RBAC configuration against a schema.
+        schema_path (str): Path to the JSON schema file for validating the RBAC configuration.
         use_operator_group (bool): Flag to enable operator group functionality, is True by default.
     """
 
@@ -230,6 +233,8 @@ class RBAC:
         self,
         config_path: str,
         account_model: RbacAccount,
+        validate: bool = False,
+        schema_path=None,
         use_operator_group: bool = True,
     ):
         """
@@ -238,6 +243,8 @@ class RBAC:
         Args:
             config_path (str): Path to the YAML configuration file.
         """
+        self._validate = validate
+        self._schema_path = schema_path
         self._roles = self.load_config(config_path)
         self._account_model = account_model
         self._use_operator_group = use_operator_group
@@ -260,17 +267,41 @@ class RBAC:
         Raises:
             FileNotFoundError: If the specified configuration file does not exist.
             yaml.YAMLError: If the configuration file contains invalid YAML syntax.
+            jsonschema.ValidationError: If the configuration does not conform to the schema.
         """
-
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"RBAC config file not found: {config_path}")
         with open(config_path, encoding="utf-8") as file_handle:
             config: Dict[str, Dict[str, Dict]] = yaml.load(
                 file_handle, Loader=yaml.FullLoader
             )
+        if self._validate:
+            if self._schema_path is None:
+                self._schema_path = os.path.join(
+                    os.path.dirname(__file__), "schemes", "rbac.json"
+                )
+            with open(self._schema_path, encoding="utf-8") as schema_file:
+                schema = json.load(schema_file)
+                jsonschema.validate(instance=config, schema=schema)
         self._policy = config.get("roles", {})
         roles = {role.upper(): role for role in self._policy.keys()}
         return Enum("Roles", roles)
+
+    @staticmethod
+    def validate_config(config_path: str, schema_path: str = None):
+        """
+        Validate RBAC configuration file against the JSON schema.
+
+        Args:
+            config_path (str): Path to the YAML configuration file.
+            schema_path (str): Path to the JSON schema file for validation.
+
+        Raises:
+            FileNotFoundError: If the specified configuration file does not exist.
+            yaml.YAMLError: If the configuration file contains invalid YAML syntax.
+            jsonschema.ValidationError: If the configuration does not conform to the schema.
+        """
+        RBAC(config_path, RbacAccount, validate=True, schema_path=schema_path)
 
     def _check_permission(self, subject: Subject, action: str):
         """

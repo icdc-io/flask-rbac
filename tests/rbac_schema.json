@@ -5,14 +5,14 @@
     "roles": {
       "type": "object",
       "patternProperties": {
-        "^[a-zA-Z0-9_.-]+$": {
+        "^[a-z][a-z0-9]*$": {
           "type": "object",
           "patternProperties": {
-            "^[a-zA-Z0-9_.-]+$": {
+            "^[a-z][a-z0-9_.-]*$": {
               "type": "object",
               "properties": {
                 "permissions": {
-                  "type": "array",
+                  "type": "object",
                   "items": { "type": "string" }
                 },
                 "filters": {
@@ -21,7 +21,7 @@
                 }
               },
               "required": ["permissions", "filters"],
-              "additionalProperties": false
+              "additionalProperties": true
             }
           },
           "additionalProperties": false
@@ -31,5 +31,5 @@
     }
   },
   "required": ["roles"],
-  "additionalProperties": false
+  "additionalProperties": true
 }
