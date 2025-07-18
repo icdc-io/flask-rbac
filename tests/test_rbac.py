@@ -30,6 +30,8 @@ Functions:
 import unittest
 from unittest.mock import patch, MagicMock
 import os
+import jsonschema
+import jsonschema.exceptions
 
 mock_abort = patch("flask.abort", MagicMock()).start()
 mock_request = patch("flask.request", MagicMock()).start()
@@ -85,6 +87,10 @@ class MockAccount(RbacAccount):
 
 rbac_config_path = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "test_rbac.yaml"
+)
+
+invalid_rbac_config_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "test_rbac_nv.yaml"
 )
 
 
@@ -598,6 +604,43 @@ class TestRBAC(unittest.TestCase):
                     mock_request_headers.assert_any_call("x-auth-role")
                     mock_request_headers.assert_any_call("x-auth-user")
 
+    def test_validate_config_success(self):
+        """RBAC configuration validation succeeds."""
+        with self.subTest("Static method validate_config"):
+            self.rbac.validate_config(rbac_config_path)
+        
+        with self.subTest("Create RBAC instance with validate=True"):
+            RBAC(rbac_config_path, MockAccount, validate=True)
+        
+        custom_schema_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "rbac_schema.json"
+        )
+
+        with self.subTest("Static method validate_config with custom schema"):
+            self.rbac.validate_config(invalid_rbac_config_path, schema_path=custom_schema_path)
+
+        with self.subTest("Custom validation schema instance creation"):
+            RBAC(invalid_rbac_config_path, MockAccount, validate=True, schema_path=custom_schema_path)
+
+    def test_validate_config_failure(self):
+        """RBAC configuration validation fails."""
+        with self.subTest("File not found static method"):
+            with self.assertRaises(FileNotFoundError):
+                self.rbac.validate_config("nonexistent_file.yaml")
+
+        with self.subTest("File not found instance"):
+            with self.assertRaises(FileNotFoundError):
+                RBAC("nonexistent_file.yaml", MockAccount)
+
+        with self.subTest("Invalid RBAC configuration"):
+            with self.assertRaises(jsonschema.exceptions.ValidationError) as context:
+                RBAC(invalid_rbac_config_path, MockAccount, validate=True)
+            self.assertIn("{} is not of type 'array'", context.exception.message)
+
+        with self.subTest("Invalid RBAC configuration with static method"):
+            with self.assertRaises(jsonschema.exceptions.ValidationError) as context:
+                self.rbac.validate_config(invalid_rbac_config_path)
+            self.assertIn("{} is not of type 'array'", context.exception.message)
 
 class TestSubject(unittest.TestCase):
     def setUp(self):

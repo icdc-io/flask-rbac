@@ -1,0 +1,5 @@
+roles:
+  operator:
+    products:
+      permissions: {}
+      filters: {}
