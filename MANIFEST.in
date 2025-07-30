@@ -1,0 +1,1 @@
+include flask_rbac_icdc/schemes/rbac.json
